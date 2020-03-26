@@ -1,74 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const Department = require('../models/department.model');
+const {
+  getAllDepartments,
+  getRandomDepartment,
+  getDepartmentById,
+  postDepartment,
+  putDepartment,
+  deleteDepartment,
+} = require('../controllers/departments.controller');
 
-router.get('/departments', async (req, res) => {
-  try {
-    res.json(await Department.find());
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+router.get('/departments', getAllDepartments);
 
-router.get('/departments/random', async (req, res) => {
-  try {
-    const count = await Department.countDocuments();
-    const rand = Math.floor(Math.random() * count);
-    const dep = await Department.findOne().skip(rand);
-    if (!dep) res.status(404).json({ message: 'Not found' });
-    else res.json(dep);
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+router.get('/departments/random', getRandomDepartment);
 
-router.get('/departments/:id', async (req, res) => {
-  try {
-    const dep = await Department.findById(req.params.id);
-    console.log(dep);
-    if (!dep) res.status(404).json({ message: 'Not found' });
-    else res.json(dep);
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+router.get('/departments/:id', getDepartmentById);
 
-router.post('/departments', async (req, res) => {
-  try {
-    const { name } = req.body;
-    const newDepartment = new Department({ name: name });
-    await newDepartment.save();
-    res.json({ message: 'OK' });
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+router.post('/departments', postDepartment);
 
-router.put('/departments/:id', async (req, res) => {
-  const { name } = req.body;
+router.put('/departments/:id', putDepartment);
 
-  try {
-    const dep = await Department.findById(req.params.id);
-    if (dep) {
-      dep.name = name;
-      await dep.save();
-      res.json({ message: 'OK', modified: dep });
-    } else res.status(404).json({ message: 'Not found...' });
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
-
-router.delete('/departments/:id', async (req, res) => {
-  try {
-    const dep = await Department.findById(req.params.id);
-    if (dep) {
-      await Department.deleteOne({ _id: req.params.id });
-      res.json({ message: 'OK', modified: dep });
-    } else res.status(404).json({ message: 'Not found...' });
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-});
+router.delete('/departments/:id', deleteDepartment);
 
 module.exports = router;
