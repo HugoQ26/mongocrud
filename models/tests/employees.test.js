@@ -2,7 +2,7 @@ const Employee = require('../employees.model');
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 
-describe('Employees', () => {
+describe('Employees Model', () => {
   after(() => {
     mongoose.models = {};
   });
